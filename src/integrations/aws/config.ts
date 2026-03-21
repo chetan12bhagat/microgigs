@@ -7,8 +7,8 @@ export const awsConfig: any = {
         oauth: {
           domain: "microgig-hub.auth.us-east-1.amazoncognito.com",
           scopes: ["email", "openid", "profile"],
-          redirectSignIn: ["http://localhost:8080/"],
-          redirectSignOut: ["http://localhost:8080/"],
+          redirectSignIn: ["http://localhost:8080/", "https://microgigs.vercel.app/"],
+          redirectSignOut: ["http://localhost:8080/", "https://microgigs.vercel.app/"],
           responseType: "code"
         }
       }
