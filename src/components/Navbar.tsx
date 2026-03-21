@@ -56,10 +56,10 @@ const Navbar = () => {
                 Dashboard
               </Link>
             )}
-            <Link to="/how-it-works" className="text-foreground/80 hover:text-foreground transition-colors">
+            <Link to="/#how-it-works" className="text-foreground/80 hover:text-foreground transition-colors">
               How It Works
             </Link>
-            <Link to="/about" className="text-foreground/80 hover:text-foreground transition-colors">
+            <Link to="/#about" className="text-foreground/80 hover:text-foreground transition-colors">
               About
             </Link>
           </div>

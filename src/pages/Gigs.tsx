@@ -38,7 +38,7 @@ const Gigs = () => {
     getCurrentUser().then((user) => {
       setUser(user);
     }).catch(() => {
-      navigate("/auth");
+      setUser(null);
     });
 
     const stopHubListener = Hub.listen("auth", ({ payload }) => {

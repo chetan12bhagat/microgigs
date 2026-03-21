@@ -134,7 +134,7 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section id="how-it-works" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">How It Works</h2>
@@ -210,7 +210,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 px-4">
+      <footer id="about" className="border-t border-border py-12 px-4">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
