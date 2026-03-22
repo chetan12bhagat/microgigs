@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroGigs | Student Micro-Project Platform</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-dark: #1a2744;
+            --primary-blue: #1565c0;
+            --accent-blue: #1e88e5;
+            --cyan-blue: #29b6f6;
+            --electric-accent: #00e5ff;
+            --bg-light: #f0f6ff;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-blue: 0 8px 32px 0 rgba(21, 101, 192, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--primary-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+        }
+
+        /* --- Utilities --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-blue);
+            border-radius: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--electric-accent));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* --- Animations --- */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Sections --- */
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: var(--primary-dark);
+        }
+
+        .logo span {
+            color: var(--cyan-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--primary-dark);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            padding: 10rem 0 8rem;
+            background: radial-gradient(circle at 10% 20%, rgba(21, 101, 192, 0.05) 0%, rgba(0, 229, 255, 0.02) 90%);
+            overflow: hidden;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-dark) 30%, var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Geometric Decoration */
+        .crystal-bg {
+            position: absolute;
+            right: -5%;
+            top: 10%;
+            width: 50%;
+            height: 80%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .polygon {
+            fill: var(--accent-blue);
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Features */
+        .section-padding {
+            padding: 8rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.1), rgba(0, 229, 255, 0.05));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--accent-blue);
+        }
+
+        /* How it works */
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            position: relative;
+        }
+
+        .step-card {
+            text-align: center;
+        }
+
+        .step-num {
+            font-family: 'Manrope', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: rgba(30, 136, 229, 0.1);
+            margin-bottom: -1rem;
+        }
+
+        /* Categories */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cat-card {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .cat-card:hover {
+            background: var(--white);
+            border-color: var(--accent-blue);
+        }
+
+        /* CTA */
+        .cta {
+            background: var(--primary-dark);
+            border-radius: 30px;
+            padding: 5rem;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        .cta-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(21, 101, 192, 0.4), transparent);
+            z-index: 1;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: #a0aec0;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .footer-logo span { color: var(--electric-accent); }
+
+        .footer-links h4 {
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--electric-accent);
+        }
+
+        /* Responsive */
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                border-bottom: 2px solid var(--bg-light);
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .hero-layout { grid-template-columns: 1fr; text-align: center; }
+            .hero-subtitle { margin-left: auto; margin-right: auto; }
+            .hero-btns { justify-content: center; }
+            .crystal-bg { display: none; }
+            .feature-grid { grid-template-columns: 1fr 1fr; }
+            .how-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid, .how-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 2.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="container nav-content">
+            <a href="#" class="logo">
+                <i data-lucide="gem" style="color: var(--accent-blue)"></i>
+                Micro<span>Gigs</span>
+            </a>
+            <div class="menu-toggle" id="menu-toggle">
+                <i data-lucide="menu"></i>
+            </div>
+            <div class="nav-links" id="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how">How it Works</a>
+                <a href="#categories">Gigs</a>
+                <a href="#" class="btn btn-outline">Sign In</a>
+                <a href="#" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container hero-layout">
+            <div class="hero-text">
+                <h1 class="hero-title">Fuel Your Education with Micro-Projects</h1>
+                <p class="hero-subtitle">The first platform designed exclusively for students to gain professional experience and earn by solving real micro-tasks for growth-focused clients.</p>
+                <div class="hero-btns">
+                    <a href="#" class="btn btn-primary">Browse Projects <i data-lucide="arrow-right" style="margin-left: 8px"></i></a>
+                    <a href="#" class="btn btn-outline">Post a Gig</a>
+                </div>
+            </div>
+            <!-- Geometric Crystal Placeholder -->
+            <div class="crystal-bg">
+                <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Base Polygon -->
+                    <path d="M250,30 L430,140 L430,360 L250,470 L70,360 L70,140 Z" fill="url(#grad1)" class="polygon" style="animation-duration: 8s" />
+                    <!-- Floating Fragments -->
+                    <path d="M300,80 L380,140 L340,160 Z" fill="var(--electric-accent)" opacity="0.6" class="polygon" style="animation-duration: 12s" />
+                    <path d="M150,380 L220,440 L180,450 Z" fill="var(--cyan-blue)" opacity="0.4" class="polygon" style="animation-duration: 10s" />
+                    <path d="M400,250 L460,280 L440,320 Z" fill="var(--primary-blue)" opacity="0.3" class="polygon" style="animation-duration: 15s" />
+                    
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--primary-blue);stop-opacity:0.2" />
+                            <stop offset="100%" style="stop-color:var(--electric-accent);stop-opacity:0.05" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <circle cx="250" cy="250" r="180" fill="none" stroke="var(--accent-blue)" stroke-width="0.3" stroke-dasharray="5 15" />
+                    <circle cx="250" cy="250" r="220" fill="none" stroke="var(--cyan-blue)" stroke-width="0.2" stroke-dasharray="2 10" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="container" style="margin-top: -4rem; position: relative; z-index: 10;">
+        <div class="glass" style="padding: 2.5rem; display: flex; justify-content: space-around; text-align: center; border-radius: 30px;">
+            <div class="reveal">
+                <h3 style="font-size: 2.5rem; color: var(--accent-blue);">5k+</h3>
+                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.7;">Active Students</p>
+            </div>
+            <div style="width: 1px; background: rgba(0,0,0,0.05);"></div>
+            <div class="reveal" style="transition-delay: 0.1s;">
+                <h3 style="font-size: 2.5rem; color: var(--accent-blue);">$200k+</h3>
+                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.7;">Earned to Date</p>
+            </div>
+            <div style="width: 1px; background: rgba(0,0,0,0.05);"></div>
+            <div class="reveal" style="transition-delay: 0.2s;">
+                <h3 style="font-size: 2.5rem; color: var(--accent-blue);">1.2k+</h3>
+                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.7;">Micro-Projects</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section-padding">
+        <div class="container">
+            <div class="section-title reveal">
+                <h2>Designed for the Next Generation</h2>
+                <p>Everything you need to turn your skills into a portfolio-building machine.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card glass reveal">
+                    <div class="feature-icon"><i data-lucide="zap"></i></div>
+                    <h3>Student First</h3>
+                    <p>Verified student-only talent pool ensuring the best opportunities for learners.</p>
+                </div>
+                <div class="feature-card glass reveal">
+                    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+                    <h3>Secure Payments</h3>
+                    <p>Protected payouts for every project. Your hard work, your money, guaranteed.</p>
+                </div>
+                <div class="feature-card glass reveal">
+                    <div class="feature-icon"><i data-lucide="layers"></i></div>
+                    <h3>Portfolio Growth</h3>
+                    <p>Every gig you complete adds a verified project to your professional profile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how" class="section-padding" style="background-color: var(--white);">
+        <div class="container">
+            <div class="section-title reveal">
+                <h2>Simple Process, Real Results</h2>
+            </div>
+            <div class="how-grid">
+                <div class="step-card reveal">
+                    <div class="step-num">01</div>
+                    <div class="feature-icon"><i data-lucide="user-plus"></i></div>
+                    <h4>Create Profile</h4>
+                    <p>List your skills and university details.</p>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-num">02</div>
+                    <div class="feature-icon"><i data-lucide="search"></i></div>
+                    <h4>Find Gigs</h4>
+                    <p>Browse bite-sized projects that fit your schedule.</p>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-num">03</div>
+                    <div class="feature-icon"><i data-lucide="rocket"></i></div>
+                    <h4>Submit Work</h4>
+                    <p>Deliver high-quality results to clients.</p>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-num">04</div>
+                    <div class="feature-icon"><i data-lucide="credit-card"></i></div>
+                    <h4>Get Paid</h4>
+                    <p>Receive funds immediately upon approval.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="section-padding">
+        <div class="container">
+            <div class="section-title reveal">
+                <h2>Explore Popular Categories</h2>
+            </div>
+            <div class="cat-grid">
+                <a href="#" class="cat-card glass reveal">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="code"></i></div>
+                    <span>Web Development</span>
+                </a>
+                <a href="#" class="cat-card glass reveal" style="transition-delay: 0.1s;">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="palette"></i></div>
+                    <span>Graphic Design</span>
+                </a>
+                <a href="#" class="cat-card glass reveal" style="transition-delay: 0.2s;">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="pen-tool"></i></div>
+                    <span>Content Writing</span>
+                </a>
+                <a href="#" class="cat-card glass reveal" style="transition-delay: 0.3s;">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="bar-chart-3"></i></div>
+                    <span>Digital Marketing</span>
+                </a>
+                <a href="#" class="cat-card glass reveal" style="transition-delay: 0.4s;">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="video"></i></div>
+                    <span>Video Editing</span>
+                </a>
+                <a href="#" class="cat-card glass reveal" style="transition-delay: 0.5s;">
+                    <div class="feature-icon" style="margin: 0; width: 50px; height: 50px;"><i data-lucide="database"></i></div>
+                    <span>Data Entry</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-padding" style="background: var(--white)">
+        <div class="container">
+            <div class="section-title reveal">
+                <h2>Success Stories</h2>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card glass reveal" style="text-align: left; padding: 2.5rem;">
+                    <div style="display: flex; gap: 4px; color: #ffb400; margin-bottom: 1rem;">
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                    </div>
+                    <p style="font-style: italic; margin-bottom: 1.5rem; opacity: 0.8;">"MicroGigs helped me land my first real-world React project during my second year of college. The payment was instant!"</p>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #ddd;"></div>
+                        <div>
+                            <h4 style="font-size: 1rem;">Alex Rivera</h4>
+                            <p style="font-size: 0.8rem; opacity: 0.6;">CS Student @ Stanford</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- More testimonials... -->
+                 <div class="feature-card glass reveal" style="text-align: left; padding: 2.5rem; transition-delay: 0.1s;">
+                    <div style="display: flex; gap: 4px; color: #ffb400; margin-bottom: 1rem;">
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                    </div>
+                    <p style="font-style: italic; margin-bottom: 1.5rem; opacity: 0.8;">"As a startup founder, I love hiring students who are eager to learn and deliver high-quality work at fair prices."</p>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #ddd;"></div>
+                        <div>
+                            <h4 style="font-size: 1rem;">Sarah Chen</h4>
+                            <p style="font-size: 0.8rem; opacity: 0.6;">CEO @ FlowState</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="feature-card glass reveal" style="text-align: left; padding: 2.5rem; transition-delay: 0.2s;">
+                    <div style="display: flex; gap: 4px; color: #ffb400; margin-bottom: 1rem;">
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                        <i data-lucide="star" style="width: 16px; fill: currentColor"></i>
+                    </div>
+                    <p style="font-style: italic; margin-bottom: 1.5rem; opacity: 0.8;">"The verification system is top-notch. I feel safe knowing every project is backed by the platform."</p>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #ddd;"></div>
+                        <div>
+                            <h4 style="font-size: 1rem;">James Wilson</h4>
+                            <p style="font-size: 0.8rem; opacity: 0.6;">Design Student @ RISD</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="container" style="margin-bottom: 8rem;">
+        <div class="cta reveal">
+            <div class="cta-bg"></div>
+            <div class="cta-content">
+                <h2 style="font-size: 3rem; margin-bottom: 1rem;">Ready to Start Earning?</h2>
+                <p style="margin-bottom: 2.5rem; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">Join 5,000+ students already building their future on MicroGigs.</p>
+                <a href="#" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem;">Join for Free</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo">Micro<span>Gigs</span></a>
+                    <p>Empowering the next generation of professional talent through micro-projects. Designed by students, for students.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#">Browse Gigs</a></li>
+                        <li><a href="#">Become a Pro</a></li>
+                        <li><a href="#">Hire Students</a></li>
+                        <li><a href="#">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.9rem;">
+                <p>&copy; 2026 MicroGigs Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.querySelector('i').setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            });
+        });
+
+        // Smooth Scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

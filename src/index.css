@@ -8,43 +8,48 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 15% 15%;
+    --background: 219 100% 97%; /* #f0f6ff */
+    --foreground: 222 45% 18%; /* #1a2744 */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card-foreground: 222 45% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
+    --popover-foreground: 222 45% 18%;
 
-    --primary: 180 75% 35%;
+    --primary: 212 80% 42%; /* #1565c0 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 30% 95%;
-    --secondary-foreground: 180 75% 25%;
+    --secondary: 208 79% 51%; /* #1e88e5 */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 219 50% 90%;
+    --muted-foreground: 222 25% 45%;
 
-    --accent: 25 95% 60%;
+    --accent: 199 92% 56%; /* #29b6f6 */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 180 75% 35%;
+    --border: 212 80% 90%;
+    --input: 212 80% 90%;
+    --ring: 212 80% 42%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Custom design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(180 75% 35%) 0%, hsl(180 85% 45%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(25 95% 60%) 0%, hsl(35 95% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(180 75% 35%) 0%, hsl(180 85% 45%) 50%, hsl(25 95% 60%) 100%);
-    --shadow-soft: 0 4px 20px -4px hsl(180 75% 35% / 0.15);
-    --shadow-medium: 0 8px 30px -6px hsl(180 75% 35% / 0.2);
-    --shadow-strong: 0 20px 50px -12px hsl(180 75% 35% / 0.3);
+    /* Custom design tokens - MicroGigs Crystal Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(212 80% 42%) 0%, hsl(199 92% 56%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(199 92% 56%) 0%, hsl(186 100% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(222 45% 18%) 0%, hsl(212 80% 42%) 50%, hsl(199 92% 56%) 100%);
+    
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-blue: 0 8px 32px 0 rgba(21, 101, 192, 0.15);
+    
+    --shadow-soft: 0 4px 20px -4px hsl(212 80% 42% / 0.15);
+    --shadow-medium: 0 8px 30px -6px hsl(212 80% 42% / 0.2);
+    --shadow-strong: 0 20px 50px -12px hsl(212 80% 42% / 0.3);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -86,5 +91,34 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Custom Utilities */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-blue);
+  }
+
+  .crystal-polygon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--gradient-primary);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }

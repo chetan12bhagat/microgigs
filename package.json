@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.1014.0",
     "@aws-sdk/client-dynamodb": "^3.1014.0",
     "@aws-sdk/lib-dynamodb": "^3.1014.0",
     "@hookform/resolvers": "^3.10.0",

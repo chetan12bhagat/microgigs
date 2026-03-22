@@ -3,66 +3,115 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowRight, Briefcase, DollarSign, Users, Zap, CheckCircle, TrendingUp } from "lucide-react";
-import logo from "@/assets/logo.png";
-import heroImage from "@/assets/hero-image.jpg";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { getCurrentUser } from "aws-amplify/auth";
+
+import { Hub } from "aws-amplify/utils";
 
 const Index = () => {
+  const { hash } = useLocation();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = () => getCurrentUser().then(setUser).catch(() => setUser(null));
+    fetchUser();
+    
+    const stopHubListener = Hub.listen("auth", ({ payload }) => {
+      if (payload.event === "signedIn") {
+        fetchUser();
+      } else if (payload.event === "signedOut") {
+        setUser(null);
+      }
+    });
+
+    return () => stopHubListener();
+  }, []);
+
+  useEffect(() => {
+    if (hash) {
+      const element = document.getElementById(hash.slice(1));
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [hash]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
+      <section className="relative pt-32 pb-32 px-4 overflow-hidden">
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -z-10 translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/10 blur-[100px] rounded-full -z-10 -translate-x-1/2 translate-y-1/2" />
+        
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
               <div className="inline-block">
-                <span className="px-4 py-2 bg-gradient-primary text-primary-foreground rounded-full text-sm font-medium">
-                  The Future of Micro-Projects
+                <span className="px-4 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-semibold tracking-wider uppercase">
+                  Student Micro-Project Platform
                 </span>
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                Turn Your Skills Into{" "}
+              <h1 className="text-6xl md:text-7xl font-extrabold leading-[1.1] tracking-tight text-foreground font-manrope">
+                Fuel Your Future with <br />
                 <span className="bg-gradient-primary bg-clip-text text-transparent">
-                  Income
+                  Micro-Projects
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground">
-                Connect with clients seeking micro-projects. Perfect for students and freelancers 
-                looking to build experience and earn money on flexible schedules.
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
+                The first platform designed exclusively for students to gain professional experience 
+                and earn by solving real micro-tasks for growth-focused clients.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/auth">
-                  <Button size="lg" className="bg-gradient-primary hover:opacity-90 shadow-medium group">
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                {user ? (
+                   <Link to="/dashboard">
+                    <Button size="lg" className="bg-gradient-primary hover:opacity-90 shadow-strong h-14 px-8 rounded-full group">
+                      Go to Dashboard
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/auth">
+                    <Button size="lg" className="bg-gradient-primary hover:opacity-90 shadow-strong h-14 px-8 rounded-full group">
+                      Get Started Free
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/gigs">
-                  <Button size="lg" variant="outline" className="shadow-soft">
-                    Browse Gigs
+                  <Button size="lg" variant="outline" className="h-14 px-8 rounded-full border-2 hover:bg-background/50 transition-all font-semibold">
+                    Browse Projects
                   </Button>
                 </Link>
-              </div>
-              <div className="flex items-center gap-8 pt-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span className="text-sm text-muted-foreground">No fees to join</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span className="text-sm text-muted-foreground">Secure payments</span>
-                </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-primary opacity-20 blur-3xl rounded-full" />
-              <img 
-                src={heroImage} 
-                alt="Students and freelancers collaborating" 
-                className="relative rounded-2xl shadow-strong w-full"
-              />
+
+            <div className="relative group">
+              {/* Dynamic Crystal Graphic */}
+              <div className="absolute inset-x-0 inset-y-0 bg-primary/20 blur-[120px] rounded-full animate-float opacity-50" />
+              <div className="relative z-10 animate-float">
+                <svg viewBox="0 0 500 500" className="w-full h-auto drop-shadow-2xl">
+                    <defs>
+                        <linearGradient id="crystal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="1" />
+                            <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0.8" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M250,30 L430,140 L430,360 L250,470 L70,360 L70,140 Z" fill="url(#crystal-grad)" fillOpacity="0.05" stroke="hsl(var(--primary))" strokeWidth="1" />
+                    <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
+                    <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
+                    <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
+                    <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
+                    <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
+                    <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+                    {/* Floating accents */}
+                    <circle cx="430" cy="140" r="8" fill="#00e5ff" className="animate-pulse" />
+                    <circle cx="70" cy="360" r="6" fill="#00e5ff" className="animate-pulse delay-700" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -94,7 +143,7 @@ const Index = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Why Choose MicroGig?</h2>
+            <h2 className="text-4xl font-bold mb-4">Why Choose MicroGigs?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Built specifically for students and small clients to connect on affordable, 
               flexible micro-projects
@@ -134,30 +183,33 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 px-4 bg-muted/30">
+      <section id="how-it-works" className="py-24 px-4 bg-white/40 backdrop-blur-sm border-y border-primary/5">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">How It Works</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold mb-4 font-manrope uppercase tracking-tight">How It Works</h2>
             <p className="text-xl text-muted-foreground">Simple steps to start earning or hiring</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
             {/* For Students */}
-            <Card className="shadow-soft border-primary/20">
-              <CardContent className="pt-6">
-                <h3 className="text-2xl font-bold mb-6 text-primary">For Students/Freelancers</h3>
-                <div className="space-y-4">
+            <Card className="glass border-primary/10 overflow-hidden group">
+              <CardContent className="pt-8 px-8">
+                <h3 className="text-2xl font-bold mb-8 text-primary font-manrope flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-sm">Pro</span>
+                    For Students & Freelancers
+                </h3>
+                <div className="space-y-6">
                   {[
                     "Create your free profile and showcase your skills",
                     "Browse available gigs that match your expertise",
                     "Apply to projects with custom proposals",
                     "Complete work and get paid securely",
                   ].map((step, index) => (
-                    <div key={index} className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
+                    <div key={index} className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-soft group-hover:scale-110 transition-transform">
                         {index + 1}
                       </div>
-                      <p className="text-muted-foreground pt-1">{step}</p>
+                      <p className="text-foreground/70 pt-1 font-medium italic">{step}</p>
                     </div>
                   ))}
                 </div>
@@ -165,21 +217,24 @@ const Index = () => {
             </Card>
 
             {/* For Clients */}
-            <Card className="shadow-soft border-accent/20">
-              <CardContent className="pt-6">
-                <h3 className="text-2xl font-bold mb-6 text-accent">For Clients</h3>
-                <div className="space-y-4">
+            <Card className="glass border-accent/10 overflow-hidden group">
+              <CardContent className="pt-8 px-8">
+                <h3 className="text-2xl font-bold mb-8 text-accent font-manrope flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-sm">Biz</span>
+                    For Growth-Focused Clients
+                </h3>
+                <div className="space-y-6">
                   {[
                     "Sign up and describe your project needs",
                     "Post your gig with budget and timeline",
                     "Review applications from talented students",
                     "Hire and manage your project with ease",
                   ].map((step, index) => (
-                    <div key={index} className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-accent flex items-center justify-center text-accent-foreground font-bold">
+                    <div key={index} className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold shadow-soft group-hover:scale-110 transition-transform">
                         {index + 1}
                       </div>
-                      <p className="text-muted-foreground pt-1">{step}</p>
+                      <p className="text-foreground/70 pt-1 font-medium italic">{step}</p>
                     </div>
                   ))}
                 </div>
@@ -198,9 +253,9 @@ const Index = () => {
               <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
                 Join thousands of students and clients already succeeding on MicroGig
               </p>
-              <Link to="/auth">
+              <Link to={user ? "/dashboard" : "/auth"}>
                 <Button size="lg" variant="secondary" className="shadow-medium">
-                  Create Your Free Account
+                  {user ? "Go to Your Dashboard" : "Create Your Free Account"}
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
@@ -210,16 +265,37 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer id="about" className="border-t border-border py-12 px-4">
+      <footer id="about" className="border-t border-primary/10 py-16 px-4 bg-[#1a2744] text-white">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="MicroGig Logo" className="h-6 w-auto" />
-              <span className="font-bold text-lg">MicroGig</span>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            <div className="flex items-center gap-3 justify-center md:justify-start">
+              <svg viewBox="0 0 500 500" className="w-10 h-10">
+                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
+                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
+                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
+                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
+                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
+                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+              </svg>
+              <div className="flex flex-col leading-none">
+                <span className="text-2xl font-extrabold tracking-tight text-white font-manrope">
+                  Micro<span className="text-[#29b6f6]">Gigs</span>
+                </span>
+                <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest">
+                  Student Micro-Project Platform
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 MicroGig. Empowering students and small businesses.
-            </p>
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <p className="text-sm font-medium text-white/80">
+                © {new Date().getFullYear()} MicroGigs Platform. Designed for the Next Generation.
+              </p>
+              <div className="flex gap-4 text-xs text-white/40 font-bold uppercase tracking-wider">
+                <a href="#" className="hover:text-[#29b6f6] transition-colors">Privacy</a>
+                <a href="#" className="hover:text-[#29b6f6] transition-colors">Terms</a>
+                <a href="#" className="hover:text-[#29b6f6] transition-colors">Security</a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

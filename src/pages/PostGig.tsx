@@ -5,7 +5,6 @@ import { Hub } from "aws-amplify/utils";
 import { db } from "@/integrations/aws/client";
 import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { DYNAMODB_TABLE_NAME } from "@/integrations/aws/config";
-import logo from "../assets/logo.png";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,8 +100,6 @@ const PostGig = () => {
         }
       }));
 
-      if (error) throw error;
-
       toast.success("Gig posted successfully!");
       navigate("/dashboard");
     } catch (error: any) {
@@ -125,18 +122,31 @@ const PostGig = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24 pb-12 max-w-2xl">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <img src={logo} alt="MicroGigs Logo" className="h-10 w-auto" />
-            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Post a New Gig
+
+      {/* Background Ornaments */}
+      <div className="absolute top-0 right-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-float " />
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-accent/10 blur-[80px] rounded-full animate-float delay-1000" />
+
+      <div className="container mx-auto px-4 pt-32 pb-12 max-w-2xl relative z-10 text-foreground">
+        <div className="mb-12 text-center">
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <svg viewBox="0 0 500 500" className="w-14 h-14 drop-shadow-strong">
+                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
+                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
+                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
+                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
+                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
+                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+            </svg>
+            <h1 className="text-5xl font-extrabold tracking-tight font-manrope">
+              Post a <span className="text-gradient">Project</span>
             </h1>
           </div>
-          <p className="text-muted-foreground">
-            Fill in the details to create a new gig opportunity
+          <p className="text-lg text-muted-foreground font-medium italic">
+            Describe your project needs and find the perfect student talent to bring it to life.
           </p>
         </div>
 
@@ -244,22 +254,22 @@ const PostGig = () => {
                 </p>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-6 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate("/dashboard")}
-                  className="flex-1"
+                  className="flex-1 h-12 rounded-full border-2 font-bold transition-all hover:bg-background/80"
                   disabled={loading}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-gradient-primary hover:opacity-90"
+                  className="flex-1 bg-gradient-primary hover:opacity-90 h-12 rounded-full font-bold shadow-soft transition-all"
                   disabled={loading}
                 >
-                  {loading ? "Posting..." : "Post Gig"}
+                  {loading ? "Launching Project..." : "Launch Project"}
                 </Button>
               </div>
             </form>

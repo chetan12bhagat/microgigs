@@ -3,7 +3,6 @@ import { Hub } from "aws-amplify/utils";
 import { db } from "@/integrations/aws/client";
 import { ScanCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { DYNAMODB_TABLE_NAME } from "@/integrations/aws/config";
-import logo from "../assets/logo.png";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -167,32 +166,46 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <img src={logo} alt="MicroGigs Logo" className="h-10 w-auto" />
-            <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              {userRole === "client" ? "My Posted Gigs" : "Recommended Gigs"}
+
+      {/* Background Ornaments */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-float " />
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/5 blur-[80px] rounded-full animate-float delay-1000" />
+
+      <div className="container mx-auto px-4 pt-32 pb-12 relative z-10">
+        <div className="mb-10 text-center md:text-left">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+            <svg viewBox="0 0 500 500" className="w-12 h-12 drop-shadow-medium self-center md:self-start">
+                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
+                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
+                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
+                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
+                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
+                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+            </svg>
+            <h1 className="text-5xl font-extrabold tracking-tight font-manrope">
+              {userRole === "client" ? "Business " : "Student "}
+              <span className="text-gradient">Hub</span>
             </h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground font-medium italic max-w-2xl">
             {userRole === "client" 
-              ? "Manage and track your posted gigs" 
+              ? "Track your projects, manage applications, and find the perfect student talent." 
               : profile?.skills && profile.skills.length > 0
-                ? "Gigs matching your skills and interests"
-                : "Browse available gigs and start earning"}
+                ? "Handpicked micro-projects matching your specialized skill set."
+                : "Your central hub for building experience and managing your micro-tasks."}
           </p>
         </div>
 
         {userRole === "client" && (
-          <div className="mb-6">
+          <div className="mb-10">
             <Button 
               onClick={() => navigate("/post-gig")} 
-              className="bg-gradient-primary hover:opacity-90"
+              className="bg-gradient-primary hover:opacity-90 rounded-full px-8 h-12 font-bold shadow-medium transition-all hover:scale-105"
             >
-              Post New Gig
+              Post New Project
             </Button>
           </div>
         )}
@@ -219,9 +232,9 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {gigs.map((gig) => (
-              <Card key={gig.id} className="hover:shadow-medium transition-all duration-300">
+              <Card key={gig.id} className="glass border-primary/5 hover:scale-[1.02] transition-all duration-500 overflow-hidden flex flex-col h-full group">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge variant="secondary" className="mb-2">
@@ -266,8 +279,8 @@ const Dashboard = () => {
                     </div>
                   )}
 
-                  <Button className="w-full bg-gradient-primary hover:opacity-90">
-                    {userRole === "client" ? "View Details" : "Apply Now"}
+                  <Button className="w-full bg-gradient-primary hover:opacity-90 rounded-full h-11 font-semibold shadow-soft group-hover:shadow-medium transition-all">
+                    {userRole === "client" ? "Manage Project" : "View & Apply"}
                   </Button>
                 </CardContent>
               </Card>

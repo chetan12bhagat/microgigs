@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp, signIn, fetchAuthSession, getCurrentUser, signInWithRedirect } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
-import logo from "../assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,16 +83,36 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-background p-4">
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <img src={logo} alt="MicroGigs Logo" className="h-12 w-auto" />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden text-foreground">
+      {/* Background Ornaments */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-float " />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-accent/10 blur-[100px] rounded-full animate-float delay-1000" />
+
+      <div className="w-full max-w-md relative z-10">
+        <Link to="/" className="flex flex-col items-center gap-3 mb-10 group text-center">
+          <svg viewBox="0 0 500 500" className="w-16 h-16 drop-shadow-strong group-hover:scale-110 transition-transform duration-500">
+            <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
+            <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
+            <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
+            <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
+            <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
+            <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+          </svg>
+          <div className="flex flex-col items-center leading-none">
+            <span className="text-3xl font-extrabold tracking-tight text-[#1a2744] font-manrope">
+              Micro<span className="text-[#29b6f6]">Gigs</span>
+            </span>
+            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mt-1">
+              Student Micro-Project Platform
+            </span>
+          </div>
         </Link>
 
-        <Card className="shadow-medium border-border/50">
-          <CardHeader>
-            <CardTitle>Welcome to MicroGig</CardTitle>
-            <CardDescription>Sign in or create an account to get started</CardDescription>
+        <Card className="glass border-primary/10 shadow-strong">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-extrabold font-manrope">Welcome to MicroGigs</CardTitle>
+            <CardDescription className="font-medium">Sign in or create an account to get started</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="signin" className="w-full">

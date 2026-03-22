@@ -107,15 +107,21 @@ const Gigs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
-            Browse Gigs
+      
+      {/* Background Ornaments */}
+      <div className="absolute top-0 right-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-float " />
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-accent/5 blur-[80px] rounded-full animate-float delay-1000" />
+
+      <div className="container mx-auto px-4 pt-32 pb-12 relative z-10">
+        <div className="mb-12 text-center md:text-left">
+          <h1 className="text-5xl font-extrabold mb-3 tracking-tight font-manrope">
+            Explore <span className="text-gradient">Opportunities</span>
           </h1>
-          <p className="text-muted-foreground">
-            Find your next opportunity and start earning
+          <p className="text-lg text-muted-foreground font-medium max-w-2xl italic">
+            Discover micro-projects tailored to your student schedule and start building your professional portfolio.
           </p>
         </div>
 
@@ -126,9 +132,9 @@ const Gigs = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {gigs.map((gig) => (
-              <Card key={gig.id} className="hover:shadow-medium transition-all duration-300">
+              <Card key={gig.id} className="glass border-primary/5 hover:scale-[1.02] transition-all duration-500 overflow-hidden flex flex-col h-full group">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge variant="secondary" className="mb-2">
@@ -169,7 +175,7 @@ const Gigs = () => {
                   )}
 
                   <Button 
-                    className="w-full bg-gradient-primary hover:opacity-90"
+                    className="w-full bg-gradient-primary hover:opacity-90 rounded-full h-11 font-semibold shadow-soft group-hover:shadow-medium transition-all"
                     onClick={() => {
                       setSelectedGig({ id: gig.id, title: gig.title });
                       setDialogOpen(true);
