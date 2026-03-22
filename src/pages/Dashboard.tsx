@@ -45,6 +45,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [applications, setApplications] = useState<any[]>([]);
 
   useEffect(() => {
     getCurrentUser().then((user) => {
@@ -113,7 +114,26 @@ const Dashboard = () => {
                 ":client_id": user.userId
             }
         }));
-        setGigs(response.Items as Gig[] || []);
+        const clientGigs = response.Items as Gig[] || [];
+        setGigs(clientGigs);
+
+        // Fetch applications for these gigs
+        if (clientGigs.length > 0) {
+            const appResponse = await db.send(new ScanCommand({
+                TableName: DYNAMODB_TABLE_NAME,
+                FilterExpression: "begins_with(PK, :pk)",
+                ExpressionAttributeValues: { ":pk": "APP#" }
+            }));
+            
+            const allApps = appResponse.Items || [];
+            const clientApps = allApps.filter(app => 
+                clientGigs.some(gig => gig.id === app.gig_id)
+            ).map(app => ({
+                ...app,
+                gig_title: clientGigs.find(gig => gig.id === app.gig_id)?.title || "Unknown Project"
+            }));
+            setApplications(clientApps);
+        }
       } else {
         const response = await db.send(new ScanCommand({
             TableName: DYNAMODB_TABLE_NAME,
@@ -224,7 +244,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
                 { label: "Active Opps", value: gigs.length, icon: Briefcase },
-                { label: "Submissions", value: 0, icon: TrendingUp },
+                { label: "Submissions", value: userRole === "client" ? applications.length : 0, icon: TrendingUp },
                 { label: "Total Pay", value: "$0", icon: DollarSign },
                 { label: "Success Rate", value: "100%", icon: Calendar },
           ].map((stat, i) => (
@@ -294,9 +314,33 @@ const Dashboard = () => {
             </div>
           </main>
 
-          <aside className="w-full lg:w-80">
+          <aside className="w-full lg:w-96 space-y-8">
+            {userRole === "client" && applications.length > 0 && (
+                <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <h3 className="text-lg font-black text-[#1a2744] mb-6 uppercase tracking-widest">Recent Applications</h3>
+                    <div className="space-y-4">
+                        {applications.map((app, idx) => (
+                            <div key={idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-[#3b82f6]/30 transition-all">
+                                <div className="flex justify-between items-start mb-2">
+                                    <p className="text-[10px] font-black text-[#3b82f6] uppercase tracking-widest">{app.gig_title}</p>
+                                    <span className="text-[8px] font-bold text-slate-400">{new Date(app.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <p className="text-xs font-bold text-[#1a2744] mb-2 line-clamp-1">From: {app.student_id.split('-')[0]}...</p>
+                                <p className="text-[10px] text-slate-500 italic line-clamp-2 mb-3">"{app.cover_letter}"</p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        Bid: <span className="text-[#1a2744]">${app.proposed_rate || "Budget"}</span>
+                                    </span>
+                                    <Button size="sm" variant="ghost" className="h-7 text-[8px] font-black uppercase text-[#3b82f6] hover:bg-white">View Profile</Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 className="text-xl font-black text-[#1a2744] mb-8 uppercase tracking-widest">Notifications</h3>
+                <h3 className="text-lg font-black text-[#1a2744] mb-8 uppercase tracking-widest">Notifications</h3>
                 <div className="text-center py-12">
                     <p className="text-sm font-black text-slate-300 uppercase tracking-[0.2em]">Zero New Alerts</p>
                 </div>

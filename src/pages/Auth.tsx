@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signUp, signIn, getCurrentUser, signInWithRedirect } from "aws-amplify/auth";
+import { signUp, signIn, getCurrentUser, signInWithRedirect, confirmSignUp } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
+import { db } from "@/integrations/aws/client";
+import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { DYNAMODB_TABLE_NAME } from "@/integrations/aws/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +15,12 @@ import MicroGigsLogo from "@/components/MicroGigsLogo";
 const Auth = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | "verify">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<"student" | "client">("student");
+  const [verificationCode, setVerificationCode] = useState("");
 
   useEffect(() => {
     getCurrentUser().then((user) => {
@@ -35,7 +39,7 @@ const Auth = () => {
 
     try {
       if (authMode === "signup") {
-        const { isSignUpComplete } = await signUp({
+        const { isSignUpComplete, nextStep } = await signUp({
           username: email,
           password,
           options: {
@@ -45,12 +49,67 @@ const Auth = () => {
             },
           },
         });
+        
+        // Save role temporarily to persist it across verification
+        localStorage.setItem("pending_role", role);
+        localStorage.setItem("pending_name", fullName);
+
+        if (nextStep?.signUpStep === "CONFIRM_SIGN_UP") {
+          setAuthMode("verify");
+          toast.info("Please enter the verification code sent to your email.");
+        } else if (isSignUpComplete) {
+          toast.success("Account created successfully!");
+          setAuthMode("signin");
+        }
+      } else if (authMode === "verify") {
+        const { isSignUpComplete } = await confirmSignUp({
+            username: email,
+            confirmationCode: verificationCode
+        });
         if (isSignUpComplete) {
-          toast.success("Account created successfully! Please check your email for verification.");
+            toast.success("Verification complete! You can now sign in.");
+            setAuthMode("signin");
         }
       } else {
-        const { isSignedIn } = await signIn({ username: email, password });
-        if (isSignedIn) toast.success("Welcome back!");
+        const { isSignedIn, nextStep } = await signIn({ username: email, password });
+        
+        if (isSignedIn) {
+          const user = await getCurrentUser();
+          
+          // Check if user has a profile in DynamoDB
+          const existingProfile = await db.send(new GetCommand({
+              TableName: DYNAMODB_TABLE_NAME,
+              Key: {
+                  PK: `USER#${user.userId}`,
+                  SK: "METADATA"
+              }
+          }));
+
+          if (!existingProfile.Item) {
+              const savedRole = localStorage.getItem("pending_role") || "student";
+              const savedName = localStorage.getItem("pending_name") || "User";
+              
+              await db.send(new PutCommand({
+                  TableName: DYNAMODB_TABLE_NAME,
+                  Item: {
+                      PK: `USER#${user.userId}`,
+                      SK: "METADATA",
+                      userId: user.userId,
+                      email: user.username,
+                      name: savedName,
+                      role: savedRole,
+                      created_at: new Date().toISOString()
+                  }
+              }));
+              localStorage.removeItem("pending_role");
+              localStorage.removeItem("pending_name");
+          }
+          
+          toast.success("Welcome back!");
+        } else if (nextStep?.signInStep === "CONFIRM_SIGN_UP") {
+            setAuthMode("verify");
+            toast.info("Your account is not verified yet. Please enter the code.");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
@@ -93,15 +152,31 @@ const Auth = () => {
             </div>
             
             <h1 className="text-3xl font-extrabold text-foreground mb-4">
-              {authMode === "signup" ? "Create an account" : "Welcome back"}
+              {authMode === "signup" ? "Create an account" : authMode === "verify" ? "Verify your email" : "Welcome back"}
             </h1>
             <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
               {authMode === "signup" 
                 ? "Access your tasks, notes, and projects anytime, anywhere - and keep everything flowing in one place."
+                : authMode === "verify"
+                ? "We've sent a 6-digit code to your email. Please enter it below to activate your account."
                 : "Sign in to access your personalized student hub and manage your micro-gigs."}
             </p>
 
             <form onSubmit={handleAuth} className="space-y-6">
+              {authMode === "verify" && (
+                <div className="space-y-2">
+                  <Label htmlFor="code" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Verification Code</Label>
+                  <Input
+                    id="code"
+                    placeholder="123456"
+                    className="h-12 border-muted bg-muted/20 focus:bg-white rounded-xl transition-all text-center text-2xl tracking-[0.5em] font-black"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
               {authMode === "signup" && (
                 <div className="space-y-2">
                   <Label htmlFor="fullname" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Full Name</Label>
@@ -176,7 +251,7 @@ const Auth = () => {
                 className="w-full h-12 bg-[#1a2744] hover:bg-[#1a2744]/90 text-white rounded-xl font-bold shadow-lg shadow-[#1a2744]/20 transition-all hover:-translate-y-0.5"
                 disabled={loading}
               >
-                {loading ? "Processing..." : authMode === "signup" ? "Create account" : "Sign In"}
+                {loading ? "Processing..." : authMode === "signup" ? "Create account" : authMode === "verify" ? "Verify Code" : "Sign In"}
               </Button>
 
               <div className="relative py-2">
@@ -217,13 +292,13 @@ const Auth = () => {
 
             <div className="mt-8 text-center text-sm">
               <span className="text-muted-foreground">
-                {authMode === "signup" ? "Already have an account? " : "Don't have an account? "}
+                {authMode === "signup" ? "Already have an account? " : authMode === "verify" ? "Wait, I didn't get a code? " : "Don't have an account? "}
               </span>
               <button
-                onClick={() => setAuthMode(authMode === "signup" ? "signin" : "signup")}
+                onClick={() => setAuthMode(authMode === "signup" ? "signin" : authMode === "verify" ? "signup" : "signup")}
                 className="font-bold text-[#1a2744] hover:underline transition-all"
               >
-                {authMode === "signup" ? "Sign In" : "Register"}
+                {authMode === "signup" ? "Sign In" : authMode === "verify" ? "Back to Signup" : "Register"}
               </button>
             </div>
           </div>
