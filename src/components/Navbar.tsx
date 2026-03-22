@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getCurrentUser, signOut, fetchAuthSession } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
 import { toast } from "sonner";
+import MicroGigsLogo from "./MicroGigsLogo";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -58,25 +59,8 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-primary/10">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-105" onClick={() => setIsOpen(false)}>
-            <div className="flex items-center gap-2">
-              <svg viewBox="0 0 500 500" className="w-10 h-10 drop-shadow-sm">
-                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
-                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
-                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
-                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
-                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
-                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
-              </svg>
-              <div className="flex flex-col leading-none">
-                <span className="text-2xl font-black tracking-tighter text-[#1a2744] font-manrope">
-                  Micro<span className="text-[#29b6f6]">Gigs</span>
-                </span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                  Platform
-                </span>
-              </div>
-            </div>
+          <Link to="/" className="flex items-center transition-transform hover:scale-105" onClick={() => setIsOpen(false)}>
+            <MicroGigsLogo size="md" />
           </Link>
           
           <div className="hidden lg:flex items-center gap-8">

@@ -6,8 +6,8 @@ import { ArrowRight, Briefcase, DollarSign, Users, Zap, CheckCircle, TrendingUp 
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getCurrentUser } from "aws-amplify/auth";
-
 import { Hub } from "aws-amplify/utils";
+import MicroGigsLogo from "@/components/MicroGigsLogo";
 
 const Index = () => {
   const { hash } = useLocation();
@@ -89,28 +89,9 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="relative group">
-              {/* Dynamic Crystal Graphic */}
-              <div className="absolute inset-x-0 inset-y-0 bg-primary/20 blur-[120px] rounded-full animate-float opacity-50" />
-              <div className="relative z-10 animate-float">
-                <svg viewBox="0 0 500 500" className="w-full h-auto drop-shadow-2xl">
-                    <defs>
-                        <linearGradient id="crystal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="1" />
-                            <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0.8" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M250,30 L430,140 L430,360 L250,470 L70,360 L70,140 Z" fill="url(#crystal-grad)" fillOpacity="0.05" stroke="hsl(var(--primary))" strokeWidth="1" />
-                    <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
-                    <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
-                    <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
-                    <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
-                    <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
-                    <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
-                    {/* Floating accents */}
-                    <circle cx="430" cy="140" r="8" fill="#00e5ff" className="animate-pulse" />
-                    <circle cx="70" cy="360" r="6" fill="#00e5ff" className="animate-pulse delay-700" />
-                </svg>
+            <div className="relative group flex justify-center lg:justify-end">
+              <div className="relative z-10 transition-all duration-500 hover:scale-105">
+                 <MicroGigsLogo size="xl" />
               </div>
             </div>
           </div>
@@ -269,22 +250,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
             <div className="flex items-center gap-3 justify-center md:justify-start">
-              <svg viewBox="0 0 500 500" className="w-10 h-10">
-                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
-                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
-                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
-                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
-                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
-                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
-              </svg>
-              <div className="flex flex-col leading-none">
-                <span className="text-2xl font-extrabold tracking-tight text-white font-manrope">
-                  Micro<span className="text-[#29b6f6]">Gigs</span>
-                </span>
-                <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest">
-                  Student Micro-Project Platform
-                </span>
-              </div>
+              <MicroGigsLogo size="md" light />
             </div>
             <div className="flex flex-col items-center md:items-end gap-2">
               <p className="text-sm font-medium text-white/80">

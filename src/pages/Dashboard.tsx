@@ -177,13 +177,12 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 pt-32 pb-12 relative z-10">
         <div className="mb-10 text-center md:text-left">
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-            <svg viewBox="0 0 500 500" className="w-12 h-12 drop-shadow-medium self-center md:self-start">
-                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
-                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
-                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
-                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
-                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
-                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+            <svg viewBox="0 0 100 100" className="w-16 h-16 drop-shadow-medium self-center md:self-start">
+                <path d="M50 20 L90 40 L50 60 L10 40 Z" fill="#1a2744" />
+                <path d="M40 35 C45 30 55 30 60 35 C55 45 45 45 40 35 Z" fill="white" fillOpacity="0.4" />
+                <path d="M25 48 L25 65 C25 65 35 75 50 75 C65 75 75 65 75 65 L75 48 L50 63 Z" fill="#1a2744" fillOpacity="0.9" />
+                <path d="M90 40 L90 65 L85 70" stroke="#1a2744" strokeWidth="3" strokeLinecap="round" />
+                <circle cx="85" cy="72" r="3" fill="#1a2744" />
             </svg>
             <h1 className="text-5xl font-extrabold tracking-tight font-manrope">
               {userRole === "client" ? "Business " : "Student "}

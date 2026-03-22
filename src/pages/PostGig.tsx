@@ -134,12 +134,15 @@ const PostGig = () => {
         <div className="mb-12 text-center">
           <div className="flex flex-col items-center gap-4 mb-4">
             <svg viewBox="0 0 500 500" className="w-14 h-14 drop-shadow-strong">
-                <path d="M250,30 L430,140 L250,250 Z" fill="#1565c0" />
-                <path d="M430,140 L430,360 L250,250 Z" fill="#1e88e5" />
-                <path d="M430,360 L250,470 L250,250 Z" fill="#29b6f6" />
-                <path d="M250,470 L70,360 L250,250 Z" fill="#1565c0" />
-                <path d="M70,360 L70,140 L250,250 Z" fill="#1e88e5" />
-                <path d="M70,140 L250,30 L250,250 Z" fill="#29b6f6" />
+                <path d="M150 350 L250 450 L250 250 Z" fill="#1a2744" />
+                <path d="M250 450 L350 350 L250 250 Z" fill="#1565c0" />
+                <path d="M350 350 L420 200 L250 250 Z" fill="#1e88e5" />
+                <path d="M420 200 L300 50 L250 250 Z" fill="#29b6f6" />
+                <path d="M300 50 L150 100 L250 250 Z" fill="#1e88e5" opacity="0.8" />
+                <path d="M150 100 L80 250 L250 250 Z" fill="#1565c0" opacity="0.6" />
+                <path d="M80 250 L150 350 L250 250 Z" fill="#1a2744" opacity="0.9" />
+                <path d="M250 250 L350 350 L420 300 Z" fill="#29b6f6" opacity="0.3" />
+                <path d="M250 250 L150 100 L80 150 Z" fill="#29b6f6" opacity="0.2" />
             </svg>
             <h1 className="text-5xl font-extrabold tracking-tight font-manrope">
               Post a <span className="text-gradient">Project</span>
