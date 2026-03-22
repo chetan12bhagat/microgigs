@@ -34,7 +34,7 @@ const Gigs = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [budgetRange, setBudgetRange] = useState<number[]>([0, 1000]);
+  const [budgetRange, setBudgetRange] = useState<number[]>([0, 50000]);
   const [selectedGig, setSelectedGig] = useState<{ id: string; title: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -163,12 +163,12 @@ const Gigs = () => {
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Budget: ${budgetRange[0]}+</label>
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Budget: ₹{budgetRange[0]}+</label>
                         <Slider
                             value={[budgetRange[1]]} // Slider expects an array for value
                             onValueChange={(val) => setBudgetRange([0, val[0]])} // Update budgetRange based on slider
-                            max={1000} // Max budget set to 1000
-                            step={50}
+                            max={50000} // Max budget set to 50000
+                            step={500}
                             className="py-4"
                         />
                     </div>
@@ -178,7 +178,7 @@ const Gigs = () => {
                           className="w-full text-slate-400 hover:text-slate-900 hover:bg-slate-50 font-black text-[10px] uppercase tracking-[0.2em] transition-all"
                           onClick={() => {
                               setSelectedCategory("all");
-                              setBudgetRange([0, 1000]);
+                              setBudgetRange([0, 50000]);
                               setSearchQuery("");
                           }}
                       >
@@ -212,7 +212,7 @@ const Gigs = () => {
                           <span className="px-4 py-1.5 bg-[#3b82f6] text-white text-[10px] font-black rounded-lg uppercase tracking-widest">
                               {gig.category}
                           </span>
-                          <span className="text-lg font-black text-[#3b82f6]">${gig.budget}</span>
+                          <span className="text-lg font-black text-[#3b82f6]">₹{gig.budget}</span>
                       </div>
                       
                       <h3 className="text-xl font-black text-[#1a2744] mb-3 group-hover:text-[#3b82f6] transition-colors line-clamp-1">{gig.title}</h3>

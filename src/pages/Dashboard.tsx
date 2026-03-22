@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Search } from "lucide-react";
-import { Calendar, DollarSign, Briefcase, TrendingUp } from "lucide-react";
+import { Calendar, IndianRupee, Briefcase, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import ApplicationDialog from "@/components/ApplicationDialog";
 
@@ -245,7 +245,7 @@ const Dashboard = () => {
           {[
                 { label: "Active Opps", value: gigs.length, icon: Briefcase },
                 { label: "Submissions", value: userRole === "client" ? applications.length : 0, icon: TrendingUp },
-                { label: "Total Pay", value: "$0", icon: DollarSign },
+                { label: "Total Pay", value: "₹0", icon: IndianRupee },
                 { label: "Success Rate", value: "100%", icon: Calendar },
           ].map((stat, i) => (
             <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
@@ -261,9 +261,22 @@ const Dashboard = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           <main className="flex-1 space-y-8">
             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 className="text-xl font-black text-[#1a2744] mb-8 uppercase tracking-widest">
-                    {userRole === "client" ? "Your Project Stream" : "Recommended Projects"}
-                </h3>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <h3 className="text-xl font-black text-[#1a2744] uppercase tracking-widest">
+                        {userRole === "client" ? "Your Project Stream" : "Recommended Projects"}
+                    </h3>
+                    {userRole === "client" && (
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleSeed}
+                            disabled={isSeeding}
+                            className="bg-[#3b82f6]/5 text-[#3b82f6] border-[#3b82f6]/20 font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-[#3b82f6] hover:text-white transition-all shadow-sm"
+                        >
+                            {isSeeding ? "Seeding..." : "Load Demo Gigs"}
+                        </Button>
+                    )}
+                </div>
                 
                 {gigs.length === 0 ? (
                   <div className="text-center py-20 border-2 border-dashed border-slate-50 rounded-[32px]">
@@ -289,8 +302,8 @@ const Dashboard = () => {
                                   </div>
                                   <div className="flex gap-4 items-center">
                                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                                          <DollarSign className="w-3 h-3 text-[#3b82f6]" /> 
-                                          ${gig.budget}
+                                          <IndianRupee className="w-3 h-3 text-[#3b82f6]" /> 
+                                          ₹{gig.budget}
                                       </p>
                                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                           <Calendar className="w-3 h-3 text-[#3b82f6]" /> 
@@ -329,7 +342,7 @@ const Dashboard = () => {
                                 <p className="text-[10px] text-slate-500 italic line-clamp-2 mb-3">"{app.cover_letter}"</p>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        Bid: <span className="text-[#1a2744]">${app.proposed_rate || "Budget"}</span>
+                                        Bid: <span className="text-[#1a2744]">₹{app.proposed_rate || "Budget"}</span>
                                     </span>
                                     <Button size="sm" variant="ghost" className="h-7 text-[8px] font-black uppercase text-[#3b82f6] hover:bg-white">View Profile</Button>
                                 </div>

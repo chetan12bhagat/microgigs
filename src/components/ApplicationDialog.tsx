@@ -124,7 +124,7 @@ const ApplicationDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="proposed_rate">Proposed Rate (USD) - Optional</Label>
+            <Label htmlFor="proposed_rate">Proposed Rate (INR) - Optional</Label>
             <Input
               id="proposed_rate"
               type="number"

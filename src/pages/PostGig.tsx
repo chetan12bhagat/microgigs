@@ -209,11 +209,11 @@ const PostGig = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="budget">Budget (USD) *</Label>
+                <Label htmlFor="budget">Budget (INR) *</Label>
                 <Input
                   id="budget"
                   type="number"
-                  placeholder="e.g., 500"
+                  placeholder="e.g., 5000"
                   min="0"
                   step="0.01"
                   value={formData.budget}

@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ArrowRight, Briefcase, DollarSign, Users, Zap, CheckCircle, TrendingUp } from "lucide-react";
+import { ArrowRight, Briefcase, IndianRupee, Users, Zap, CheckCircle, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getCurrentUser } from "aws-amplify/auth";
@@ -106,7 +106,7 @@ const Index = () => {
             {[
               { icon: Users, label: "Active Users", value: "10K+" },
               { icon: Briefcase, label: "Gigs Posted", value: "5K+" },
-              { icon: DollarSign, label: "Earned Total", value: "$500K+" },
+              { icon: IndianRupee, label: "Earned Total", value: "₹4Cr+" },
               { icon: TrendingUp, label: "Success Rate", value: "95%" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
@@ -140,7 +140,7 @@ const Index = () => {
                 description: "Post or find gigs in minutes. Simple interface designed for speed and efficiency.",
               },
               {
-                icon: DollarSign,
+                icon: IndianRupee,
                 title: "Affordable Pricing",
                 description: "Budget-friendly rates perfect for students and small businesses. No hidden fees.",
               },
