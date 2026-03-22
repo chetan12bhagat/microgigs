@@ -3,12 +3,15 @@ import { Hub } from "aws-amplify/utils";
 import { db } from "@/integrations/aws/client";
 import { ScanCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { DYNAMODB_TABLE_NAME } from "@/integrations/aws/config";
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Search } from "lucide-react";
 import { Calendar, DollarSign, Briefcase, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 interface Gig {
   id: string;
@@ -20,6 +23,8 @@ interface Gig {
   status: string;
   required_skills: string[] | null;
   created_at: string;
+  client_name?: string;
+  client_details?: string;
 }
 
 interface UserProfile {
@@ -29,10 +34,14 @@ interface UserProfile {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { seedMockGigs } from "@/integrations/aws/seed";
+import SkillBadge from "@/components/SkillBadge";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [gigs, setGigs] = useState<Gig[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -116,7 +125,12 @@ const Dashboard = () => {
             }
         }));
         
-        let fetchedGigs = response.Items as Gig[] || [];
+        const responseItems = response.Items || [] as any[];
+        let fetchedGigs = responseItems.map(item => ({
+            ...item,
+            client_name: item.client_name,
+            client_details: item.client_details
+        })) as Gig[];
         
         // Filter by skills if profile has skills
         if (profile?.skills && profile.skills.length > 0) {
@@ -138,6 +152,20 @@ const Dashboard = () => {
     }
   };
 
+  const handleSeed = async () => {
+    if (!user) return;
+    setIsSeeding(true);
+    try {
+      await seedMockGigs(user.userId);
+      toast.success("Sample gigs added successfully!");
+      fetchGigs();
+    } catch (error) {
+      toast.error("Failed to seed items.");
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   const formatCategory = (category: string) => {
     return category.split("_").map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
@@ -156,136 +184,125 @@ const Dashboard = () => {
 
   if (loading || !userRole) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <p className="text-center text-muted-foreground">Loading dashboard...</p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-center text-muted-foreground font-bold animate-pulse">Loading Hub...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <Navbar />
-
-      {/* Background Ornaments */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-float " />
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/5 blur-[80px] rounded-full animate-float delay-1000" />
-
-      <div className="container mx-auto px-4 pt-32 pb-12 relative z-10">
-        <div className="mb-10 text-center md:text-left">
-          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-            <svg viewBox="0 0 100 100" className="w-16 h-16 drop-shadow-medium self-center md:self-start">
-                <path d="M50 20 L90 40 L50 60 L10 40 Z" fill="#1a2744" />
-                <path d="M40 35 C45 30 55 30 60 35 C55 45 45 45 40 35 Z" fill="white" fillOpacity="0.4" />
-                <path d="M25 48 L25 65 C25 65 35 75 50 75 C65 75 75 65 75 65 L75 48 L50 63 Z" fill="#1a2744" fillOpacity="0.9" />
-                <path d="M90 40 L90 65 L85 70" stroke="#1a2744" strokeWidth="3" strokeLinecap="round" />
-                <circle cx="85" cy="72" r="3" fill="#1a2744" />
-            </svg>
-            <h1 className="text-5xl font-extrabold tracking-tight font-manrope">
-              {userRole === "client" ? "Business " : "Student "}
-              <span className="text-gradient">Hub</span>
-            </h1>
+    <div className="min-h-screen">
+      {/* Normal Dashboard Header */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-white overflow-hidden relative border-b border-slate-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="max-w-2xl">
+              <h1 className="text-6xl font-black text-[#1a2744] leading-tight tracking-tight mb-4">
+                {userRole === "client" ? "Business " : "Student "}
+                <span className="text-[#3b82f6]">Hub</span>
+              </h1>
+              <p className="text-xl text-slate-500 font-medium leading-relaxed italic">
+                {userRole === "client" ? "Manage your projects and discover top talent." : "Manage your tasks, track your applications, and keep everything flowing in one place."}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={handleSeed} disabled={isSeeding} variant="outline" className="font-bold rounded-2xl border-slate-200">
+                {isSeeding ? "Syncing..." : "Seed Mock Data"}
+              </Button>
+              {userRole === "client" && (
+                <Button onClick={() => navigate("/post-gig")} className="bg-[#1a2744] hover:bg-[#1a2744]/90 text-white font-bold rounded-2xl shadow-lg">
+                  Create New Task
+                </Button>
+              )}
+            </div>
           </div>
-          <p className="text-lg text-muted-foreground font-medium italic max-w-2xl">
-            {userRole === "client" 
-              ? "Track your projects, manage applications, and find the perfect student talent." 
-              : profile?.skills && profile.skills.length > 0
-                ? "Handpicked micro-projects matching your specialized skill set."
-                : "Your central hub for building experience and managing your micro-tasks."}
-          </p>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-12">
+        {/* Simple Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {[
+                { label: "Active Opps", value: gigs.length, icon: Briefcase },
+                { label: "Submissions", value: 0, icon: TrendingUp },
+                { label: "Total Pay", value: "$0", icon: DollarSign },
+                { label: "Success Rate", value: "100%", icon: Calendar },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+              <div className={`p-3 rounded-2xl w-fit mb-6 bg-slate-50 text-[#1a2744]`}>
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <h3 className="text-3xl font-black text-[#1a2744] tracking-tight">{stat.value}</h3>
+            </div>
+          ))}
         </div>
 
-        {userRole === "client" && (
-          <div className="mb-10">
-            <Button 
-              onClick={() => navigate("/post-gig")} 
-              className="bg-gradient-primary hover:opacity-90 rounded-full px-8 h-12 font-bold shadow-medium transition-all hover:scale-105"
-            >
-              Post New Project
-            </Button>
-          </div>
-        )}
-
-        {gigs.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <TrendingUp className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">
-                {userRole === "client" 
-                  ? "You haven't posted any gigs yet." 
-                  : "No recommended gigs available at the moment."}
-              </p>
-              {userRole === "client" && (
-                <Button onClick={() => navigate("/post-gig")} className="bg-gradient-primary hover:opacity-90">
-                  Post Your First Gig
-                </Button>
-              )}
-              {userRole === "student" && (
-                <Button onClick={() => navigate("/gigs")} variant="outline">
-                  Browse All Gigs
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {gigs.map((gig) => (
-              <Card key={gig.id} className="glass border-primary/5 hover:scale-[1.02] transition-all duration-500 overflow-hidden flex flex-col h-full group">
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="secondary" className="mb-2">
-                      {formatCategory(gig.category)}
-                    </Badge>
-                    {userRole === "client" && (
-                      <Badge className={getStatusColor(gig.status)}>
-                        {gig.status.replace("_", " ")}
-                      </Badge>
-                    )}
+        <div className="flex flex-col lg:flex-row gap-8">
+          <main className="flex-1 space-y-8">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                <h3 className="text-xl font-black text-[#1a2744] mb-8 uppercase tracking-widest">
+                    {userRole === "client" ? "Your Project Stream" : "Recommended Projects"}
+                </h3>
+                
+                {gigs.length === 0 ? (
+                  <div className="text-center py-20 border-2 border-dashed border-slate-50 rounded-[32px]">
+                    <p className="text-sm font-black text-slate-300 uppercase tracking-[0.2em]">Zero Active Projects</p>
                   </div>
-                  <CardTitle className="text-xl">{gig.title}</CardTitle>
-                  <CardDescription className="line-clamp-2">
-                    {gig.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="w-4 h-4 text-primary" />
-                    <span className="font-semibold text-primary">${gig.budget}</span>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                   {gigs.map((gig) => (
+                      <div key={gig.id} onClick={() => navigate("/gigs")} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-md transition-all cursor-pointer">
+                          <div className="flex items-center gap-6">
+                              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center font-black text-[#3b82f6] shadow-sm border border-slate-50 transition-transform group-hover:scale-110">
+                                  {gig.title[0]}
+                              </div>
+                              <div>
+                                  <h4 className="font-black text-[#1a2744] transition-colors group-hover:text-[#3b82f6] line-clamp-1">{gig.title}</h4>
+                                  <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                      {gig.required_skills?.slice(0, 3).map((skill, idx) => (
+                                          <SkillBadge key={idx} skill={skill} />
+                                      ))}
+                                      {gig.required_skills && gig.required_skills.length > 3 && (
+                                          <span className="text-[10px] font-bold text-slate-300">+{gig.required_skills.length - 3}</span>
+                                      )}
+                                  </div>
+                                  <div className="flex gap-4 items-center">
+                                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                          <DollarSign className="w-3 h-3 text-[#3b82f6]" /> 
+                                          ${gig.budget}
+                                      </p>
+                                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                          <Calendar className="w-3 h-3 text-[#3b82f6]" /> 
+                                          {gig.deadline ? new Date(gig.deadline).toLocaleDateString() : "Flexible"}
+                                      </p>
+                                      {gig.client_name && (
+                                        <p className="text-[10px] font-black text-[#3b82f6] uppercase tracking-widest border-l border-slate-200 pl-4">
+                                            {gig.client_name}
+                                        </p>
+                                      )}
+                                  </div>
+                              </div>
+                          </div>
+                          <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${getStatusColor(gig.status)}`}>
+                              {gig.status.replace('_', ' ')}
+                          </span>
+                      </div>
+                  ))}
                   </div>
-                  
-                  {gig.deadline && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4" />
-                      <span>Deadline: {new Date(gig.deadline).toLocaleDateString()}</span>
-                    </div>
-                  )}
+                )}
+            </div>
+          </main>
 
-                  {gig.required_skills && gig.required_skills.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {gig.required_skills.slice(0, 3).map((skill, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {skill}
-                        </Badge>
-                      ))}
-                      {gig.required_skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{gig.required_skills.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-
-                  <Button className="w-full bg-gradient-primary hover:opacity-90 rounded-full h-11 font-semibold shadow-soft group-hover:shadow-medium transition-all">
-                    {userRole === "client" ? "Manage Project" : "View & Apply"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+          <aside className="w-full lg:w-80">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                <h3 className="text-xl font-black text-[#1a2744] mb-8 uppercase tracking-widest">Notifications</h3>
+                <div className="text-center py-12">
+                    <p className="text-sm font-black text-slate-300 uppercase tracking-[0.2em]">Zero New Alerts</p>
+                </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

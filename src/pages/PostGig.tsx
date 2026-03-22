@@ -5,7 +5,6 @@ import { Hub } from "aws-amplify/utils";
 import { db } from "@/integrations/aws/client";
 import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { DYNAMODB_TABLE_NAME } from "@/integrations/aws/config";
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,25 +111,20 @@ const PostGig = () => {
 
   if (!userRole) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <p className="text-center text-muted-foreground">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-center text-muted-foreground font-bold animate-pulse">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <Navbar />
-
+    <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-0 right-0 w-full h-full -z-10 bg-radial-gradient from-primary/5 to-transparent" />
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-float " />
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-accent/10 blur-[80px] rounded-full animate-float delay-1000" />
 
-      <div className="container mx-auto px-4 pt-32 pb-12 max-w-2xl relative z-10 text-foreground">
+      <div className="container mx-auto px-4 pt-12 pb-12 max-w-2xl relative z-10 text-foreground">
         <div className="mb-12 text-center">
           <div className="flex flex-col items-center gap-4 mb-4">
             <svg viewBox="0 0 500 500" className="w-14 h-14 drop-shadow-strong">
